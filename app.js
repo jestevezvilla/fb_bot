@@ -687,7 +687,7 @@ function sendReceiptMessage(recipientId) {
     }
   };
 
-  callSendAPI(messageData);
+  return messageData;
 }
 
 /*
@@ -742,7 +742,6 @@ function sendReadReceipt(recipientId) {
  *
  */
 function sendTypingOn(recipientId) {
-  console.log("Turning typing indicator on");
 
   var messageData = {
     recipient: {
@@ -751,7 +750,7 @@ function sendTypingOn(recipientId) {
     sender_action: "typing_on"
   };
 
-  callSendAPI(messageData);
+  return messageData;
 }
 
 /*
@@ -826,6 +825,9 @@ function callSendAPI(messageData) {
 
 function callActions(result, messageData) {
 
+
+  callFBSendAPI( sendTypingOn(messageData.recipient.id) );
+
   request({
     uri: 'http://api.openweathermap.org/data/2.5/weather',
     qs: { q: result.parameters.city, APPID: config.get('openWeatherKey') },
@@ -839,7 +841,7 @@ function callActions(result, messageData) {
 
       messageData.message.text = forecast.weather[0].main;
 
-      callFBSendAPI(messageData);
+      callFBSendAPI( sendReceiptMessage(messageData.recipient.id) );
 
 
       var recipientId = body.recipient_id;
@@ -884,6 +886,8 @@ function callFBSendAPI(messageData) {
     }
   });
 }
+
+
 
 // Start server
 // Webhooks must be available via SSL with a certificate signed by a valid
